@@ -35,9 +35,12 @@ public class MainActivity extends AppCompatActivity {
     private ImageView playPauseIcon;
     private SeekBar seekbar;
     private List<String> playlistArrayList;
+    private List<String> durationList;
     private ListView playlistListView;
+    private ListView durationListView;
     private TextView currentTrackTextView;
-    private ArrayAdapter<String> adapter;
+    private ArrayAdapter<String> playlistAdapter;
+    private ArrayAdapter<String> durationAdapter;
     private HashMap tracksHashMap;
     private int currentPlaylistItemPosition = 0;
     @Override
@@ -47,10 +50,12 @@ public class MainActivity extends AppCompatActivity {
         playPauseIcon = findViewById(R.id.imageViewPlay);
         playlistListView = findViewById(R.id.playlistListView);
         currentTrackTextView = findViewById(R.id.currentTrackTextView);
+        durationListView = findViewById(R.id.durationtListView);
         mediaPlayer = new MediaPlayer();
 
         seekbar = findViewById(R.id.seekBar);
         playlistArrayList = new ArrayList<String>();
+        durationList = new ArrayList<String>();
 
         if (ContextCompat.checkSelfPermission(
        MainActivity.this, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED){
@@ -72,8 +77,11 @@ public class MainActivity extends AppCompatActivity {
 
     public void doStuff(){
         getMusic();
-        adapter = new ArrayAdapter<>(this, R.layout.playlist_item, playlistArrayList);
-        playlistListView.setAdapter(adapter);
+        durationAdapter = new ArrayAdapter<>(this, R.layout.duration_list_item, durationList);
+        durationListView.setAdapter(durationAdapter);
+        durationListView.setClickable(false);
+        playlistAdapter = new ArrayAdapter<>(this, R.layout.playlist_item, playlistArrayList);
+        playlistListView.setAdapter(playlistAdapter);
         playlistListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -93,10 +101,17 @@ public class MainActivity extends AppCompatActivity {
         if (cursor != null && cursor.moveToFirst()) {
             int trackTitle = cursor.getColumnIndex(MediaStore.Audio.Media.TITLE);
             int trackArtist = cursor.getColumnIndex(MediaStore.Audio.Media.ARTIST);
+            int trackDuration = cursor.getColumnIndex(MediaStore.Audio.Media.DURATION);
 
             do {
                 String currentTitle = cursor.getString(trackTitle);
                 String currentArtist = cursor.getString(trackArtist);
+                String currentDuration = cursor.getString(trackDuration);
+                int duration = Integer.parseInt(currentDuration);
+                int min = duration/1000/60;
+                int sec = duration/1000 - min*60;
+                currentDuration = "" + min + ":" + sec;
+                durationList.add(currentDuration);
                 String track = currentArtist + " - " + currentTitle;
                 playlistArrayList.add(track);
                 tracksHashMap.put(track, cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.DATA)));
