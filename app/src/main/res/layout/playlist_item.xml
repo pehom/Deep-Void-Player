@@ -3,7 +3,8 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:textColor="@color/colorAccent"
-    android:textSize="14sp"
+    android:textSize="16sp"
+    android:alpha="90"
     >
 
 </TextView>

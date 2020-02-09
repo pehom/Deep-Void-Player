@@ -43,14 +43,16 @@ public class MainActivity extends AppCompatActivity {
     private ArrayAdapter<String> durationAdapter;
     private HashMap tracksHashMap;
     private int currentPlaylistItemPosition = 0;
+    private int currentTrackProgress = 0;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         playPauseIcon = findViewById(R.id.imageViewPlay);
         playlistListView = findViewById(R.id.playlistListView);
-        currentTrackTextView = findViewById(R.id.currentTrackTextView);
         durationListView = findViewById(R.id.durationtListView);
+        currentTrackTextView = findViewById(R.id.currentTrackTextView);
+
         mediaPlayer = new MediaPlayer();
 
         seekbar = findViewById(R.id.seekBar);
@@ -158,40 +160,12 @@ public class MainActivity extends AppCompatActivity {
         if (mediaPlayer.isPlaying()) {
             mediaPlayer.pause();
             playPauseIcon.setImageResource(R.drawable.ic_play_arrow_red);
-        }
-        else {
-
-
-            seekbar.setMax(mediaPlayer.getDuration());
-            new Timer().scheduleAtFixedRate(new TimerTask() {
-                @Override
-                public void run() {
-                    seekbar.setProgress(mediaPlayer.getCurrentPosition());
-                }
-            }, 0, 1000);
-
-            seekbar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-                @Override
-                public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                    if (fromUser) {
-                        mediaPlayer.seekTo(progress);
-                    }
-                }
-
-                @Override
-                public void onStartTrackingTouch(SeekBar seekBar) {
-
-                }
-
-                @Override
-                public void onStopTrackingTouch(SeekBar seekBar) {
-
-                }
-            });
+        } else {
             mediaPlayer.start();
             playPauseIcon.setImageResource(R.drawable.ic_pause_red);
-
         }
+
+
     }
 
     public void playThePosition(int position){
@@ -199,19 +173,20 @@ public class MainActivity extends AppCompatActivity {
             mediaPlayer.stop();
             mediaPlayer.release();
             mediaPlayer = new MediaPlayer();
-
-            currentTrackTextView.setText("" + playlistListView.getItemAtPosition(position));
             try {
                 mediaPlayer.setDataSource(""+tracksHashMap.get(playlistListView.getItemAtPosition(position)));
                 mediaPlayer.prepare();
                 mediaPlayer.start();
                 playPauseIcon.setImageResource(R.drawable.ic_pause_red);
-
                 seekbar.setMax(mediaPlayer.getDuration());
                 new Timer().scheduleAtFixedRate(new TimerTask() {
+
                     @Override
                     public void run() {
                         seekbar.setProgress(mediaPlayer.getCurrentPosition());
+                        int min = mediaPlayer.getCurrentPosition()/1000/60;
+                        int sec = mediaPlayer.getCurrentPosition()/1000 - min*60;
+                        Log.d("trackProgress", "trackProgress = " + min + ":" + sec);
                     }
                 }, 0, 1000);
                 seekbar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
@@ -236,10 +211,13 @@ public class MainActivity extends AppCompatActivity {
             } catch (IOException e) {
                 e.printStackTrace();
             }
+            currentTrackTextView.setText("" + playlistListView.getItemAtPosition(currentPlaylistItemPosition) );
+
+
         } else {
             mediaPlayer = new MediaPlayer();
             Log.d("mypath", "path = " + tracksHashMap.get(playlistListView.getItemAtPosition(position)));
-            currentTrackTextView.setText("" + playlistListView.getItemAtPosition(position));
+          //  currentTrackTextView.setText("" + playlistListView.getItemAtPosition(position));
             try {
                 mediaPlayer.setDataSource(""+tracksHashMap.get(playlistListView.getItemAtPosition(position)));
                 mediaPlayer.prepare();
@@ -248,6 +226,10 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void run() {
                         seekbar.setProgress(mediaPlayer.getCurrentPosition());
+                        int min = mediaPlayer.getCurrentPosition()/1000/60;
+                        int sec = mediaPlayer.getCurrentPosition()/1000 - min*60;
+                        Log.d("trackProgress", "trackProgress = " + min + ":" + sec);
+
                     }
                 }, 0, 1000);
 
@@ -275,6 +257,8 @@ public class MainActivity extends AppCompatActivity {
             } catch (IOException e) {
                 e.printStackTrace();
             }
+
+         currentTrackTextView.setText("" + playlistListView.getItemAtPosition(position));
 
         }
 

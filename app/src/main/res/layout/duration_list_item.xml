@@ -4,6 +4,7 @@
     android:layout_height="wrap_content"
     android:textColor="@color/colorAccent"
     android:textSize="14sp"
+    android:alpha="90"
     android:textAlignment="textEnd"
     android:layout_gravity="end">
 

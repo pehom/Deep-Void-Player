@@ -73,7 +73,7 @@
         android:layout_marginEnd="30dp"
         android:layout_marginRight="30dp"
         android:alpha="0.9"
-        android:text="My Song"
+
         android:textAlignment="center"
         android:textColor="@color/colorAccent"
         android:textSize="20sp"
@@ -85,7 +85,7 @@
     <ListView
         android:id="@+id/playlistListView"
         android:layout_width="0dp"
-        android:layout_height="210dp"
+        android:layout_height="190dp"
         android:layout_marginStart="30dp"
         android:layout_marginLeft="30dp"
         android:layout_marginEnd="90dp"
@@ -100,10 +100,11 @@
 
         />
 
+
     <ListView
         android:id="@+id/durationtListView"
         android:layout_width="0dp"
-        android:layout_height="210dp"
+        android:layout_height="190dp"
         android:layout_marginEnd="30dp"
         android:layout_marginRight="30dp"
         android:layout_marginBottom="10dp"
@@ -115,5 +116,51 @@
         tools:listitem="@android:layout/simple_list_item_1"
 
         />
+
+    <TextView
+        android:id="@+id/currentPlaylistTextView"
+        android:layout_width="0dp"
+        android:layout_height="20dp"
+        android:layout_marginStart="30dp"
+        android:layout_marginLeft="30dp"
+        android:layout_marginEnd="300dp"
+        android:layout_marginRight="300dp"
+        android:layout_marginBottom="10dp"
+        android:alpha="90"
+        android:text="Playlist:"
+        android:textColor="@color/colorAccent"
+        android:textSize="16sp"
+        app:layout_constraintBottom_toTopOf="@+id/playlistListView"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <TextView
+        android:id="@+id/textView2"
+        android:layout_width="0dp"
+        android:layout_height="20dp"
+        android:layout_marginEnd="90dp"
+        android:layout_marginRight="90dp"
+        android:layout_marginBottom="10dp"
+        android:alpha="90"
+        android:text="All tracks"
+        android:textAlignment="center"
+        android:textColor="@color/colorAccent"
+        android:textSize="16sp"
+        app:layout_constraintBottom_toTopOf="@+id/playlistListView"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/currentPlaylistTextView" />
+
+    <ImageView
+        android:id="@+id/imageView"
+        android:layout_width="60dp"
+        android:layout_height="20dp"
+        android:layout_marginEnd="30dp"
+        android:layout_marginRight="30dp"
+        android:layout_marginBottom="10dp"
+        app:layout_constraintBottom_toTopOf="@+id/durationtListView"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/textView2"
+        app:srcCompat="@drawable/ic_playlist_add_red_24dp"
+        tools:ignore="VectorDrawableCompat" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
