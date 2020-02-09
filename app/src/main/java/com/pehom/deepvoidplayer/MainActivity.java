@@ -79,85 +79,7 @@ public class MainActivity extends AppCompatActivity {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 //play
                 currentPlaylistItemPosition = position;
-                if (mediaPlayer.isPlaying()) {
-                    mediaPlayer.stop();
-                    mediaPlayer.release();
-                    mediaPlayer = new MediaPlayer();
-                    currentTrackTextView.setText("" + parent.getItemAtPosition(position));
-                    try {
-                        mediaPlayer.setDataSource(""+tracksHashMap.get(parent.getItemAtPosition(position)));
-                        mediaPlayer.prepare();
-                        seekbar.setMax(mediaPlayer.getDuration());
-                        new Timer().scheduleAtFixedRate(new TimerTask() {
-                            @Override
-                            public void run() {
-                                seekbar.setProgress(mediaPlayer.getCurrentPosition());
-                            }
-                        }, 0, 1000);
-                        seekbar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-                            @Override
-                            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                                if (fromUser) {
-                                    mediaPlayer.seekTo(progress);
-                                }
-                            }
-
-                            @Override
-                            public void onStartTrackingTouch(SeekBar seekBar) {
-
-                            }
-
-                            @Override
-                            public void onStopTrackingTouch(SeekBar seekBar) {
-
-                            }
-                        });
-                        mediaPlayer.start();
-                        playPauseIcon.setImageResource(R.drawable.ic_pause_red);
-
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                } else {
-                    mediaPlayer = new MediaPlayer();
-                    Log.d("mypath", "path = " + tracksHashMap.get(parent.getItemAtPosition(position)));
-                    currentTrackTextView.setText("position = " + position + parent.getItemAtPosition(position));
-                    try {
-                        mediaPlayer.setDataSource(""+tracksHashMap.get(parent.getItemAtPosition(position)));
-                        mediaPlayer.prepare();
-                        mediaPlayer.start();
-                        playPauseIcon.setImageResource(R.drawable.ic_pause_red);
-                        seekbar.setMax(mediaPlayer.getDuration());
-                        new Timer().scheduleAtFixedRate(new TimerTask() {
-                            @Override
-                            public void run() {
-                                seekbar.setProgress(mediaPlayer.getCurrentPosition());
-                            }
-                        }, 0, 1000);
-
-                        seekbar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-                            @Override
-                            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                                if (fromUser) {
-                                    mediaPlayer.seekTo(progress);
-                                }
-                            }
-
-                            @Override
-                            public void onStartTrackingTouch(SeekBar seekBar) {
-
-                            }
-
-                            @Override
-                            public void onStopTrackingTouch(SeekBar seekBar) {
-
-                            }
-                        });
-
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                }
+                playThePosition(currentPlaylistItemPosition);
             }
         });
     }
@@ -205,176 +127,15 @@ public class MainActivity extends AppCompatActivity {
     public void nextTrack(View view) {
         if (currentPlaylistItemPosition < playlistArrayList.size()-1) {
             currentPlaylistItemPosition++;
-            if (mediaPlayer.isPlaying()) {
-                mediaPlayer.stop();
-                mediaPlayer.release();
-                mediaPlayer = new MediaPlayer();
-
-                currentTrackTextView.setText("" + playlistListView.getItemAtPosition(currentPlaylistItemPosition));
-                try {
-                    mediaPlayer.setDataSource(""+tracksHashMap.get(playlistListView.getItemAtPosition(currentPlaylistItemPosition)));
-                    mediaPlayer.prepare();
-                    mediaPlayer.start();
-                    playPauseIcon.setImageResource(R.drawable.ic_pause_red);
-                    seekbar.setMax(mediaPlayer.getDuration());
-                    new Timer().scheduleAtFixedRate(new TimerTask() {
-                        @Override
-                        public void run() {
-                            seekbar.setProgress(mediaPlayer.getCurrentPosition());
-                        }
-                    }, 0, 1000);
-                    seekbar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-                        @Override
-                        public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                            if (fromUser) {
-                                mediaPlayer.seekTo(progress);
-                            }
-                        }
-
-                        @Override
-                        public void onStartTrackingTouch(SeekBar seekBar) {
-
-                        }
-
-                        @Override
-                        public void onStopTrackingTouch(SeekBar seekBar) {
-
-                        }
-                    });
-
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            } else {
-                mediaPlayer = new MediaPlayer();
-                Log.d("mypath", "path = " + tracksHashMap.get(playlistListView.getItemAtPosition(currentPlaylistItemPosition)));
-                currentTrackTextView.setText("" + playlistListView.getItemAtPosition(currentPlaylistItemPosition));
-                try {
-                    mediaPlayer.setDataSource(""+tracksHashMap.get(playlistListView.getItemAtPosition(currentPlaylistItemPosition)));
-                    mediaPlayer.prepare();
-                    mediaPlayer.start();
-                    playPauseIcon.setImageResource(R.drawable.ic_pause_red);
-                    seekbar.setMax(mediaPlayer.getDuration());
-                    new Timer().scheduleAtFixedRate(new TimerTask() {
-                        @Override
-                        public void run() {
-                            seekbar.setProgress(mediaPlayer.getCurrentPosition());
-                        }
-                    }, 0, 1000);
-
-                    seekbar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-                        @Override
-                        public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                            if (fromUser) {
-                                mediaPlayer.seekTo(progress);
-                            }
-                        }
-
-                        @Override
-                        public void onStartTrackingTouch(SeekBar seekBar) {
-
-                        }
-
-                        @Override
-                        public void onStopTrackingTouch(SeekBar seekBar) {
-
-                        }
-                    });
-
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-
-            }
+            playThePosition(currentPlaylistItemPosition);
         }
 
     }
 
     public void prevTrack(View view) {
-        if (currentPlaylistItemPosition > 1) {
+        if (currentPlaylistItemPosition > 0) {
             currentPlaylistItemPosition--;
-            if (mediaPlayer.isPlaying()) {
-                mediaPlayer.stop();
-                mediaPlayer.release();
-                mediaPlayer = new MediaPlayer();
-
-                currentTrackTextView.setText("" + playlistListView.getItemAtPosition(currentPlaylistItemPosition));
-                try {
-                    mediaPlayer.setDataSource(""+tracksHashMap.get(playlistListView.getItemAtPosition(currentPlaylistItemPosition)));
-                    mediaPlayer.prepare();
-                    mediaPlayer.start();
-                    playPauseIcon.setImageResource(R.drawable.ic_pause_red);
-
-                    seekbar.setMax(mediaPlayer.getDuration());
-                    new Timer().scheduleAtFixedRate(new TimerTask() {
-                        @Override
-                        public void run() {
-                            seekbar.setProgress(mediaPlayer.getCurrentPosition());
-                        }
-                    }, 0, 1000);
-                    seekbar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-                        @Override
-                        public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                            if (fromUser) {
-                                mediaPlayer.seekTo(progress);
-                            }
-                        }
-
-                        @Override
-                        public void onStartTrackingTouch(SeekBar seekBar) {
-
-                        }
-
-                        @Override
-                        public void onStopTrackingTouch(SeekBar seekBar) {
-
-                        }
-                    });
-
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            } else {
-                mediaPlayer = new MediaPlayer();
-                Log.d("mypath", "path = " + tracksHashMap.get(playlistListView.getItemAtPosition(currentPlaylistItemPosition)));
-                currentTrackTextView.setText("" + playlistListView.getItemAtPosition(currentPlaylistItemPosition));
-                try {
-                    mediaPlayer.setDataSource(""+tracksHashMap.get(playlistListView.getItemAtPosition(currentPlaylistItemPosition)));
-                    mediaPlayer.prepare();
-                    seekbar.setMax(mediaPlayer.getDuration());
-                    new Timer().scheduleAtFixedRate(new TimerTask() {
-                        @Override
-                        public void run() {
-                            seekbar.setProgress(mediaPlayer.getCurrentPosition());
-                        }
-                    }, 0, 1000);
-
-                    seekbar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-                        @Override
-                        public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                            if (fromUser) {
-                                mediaPlayer.seekTo(progress);
-                            }
-                        }
-
-                        @Override
-                        public void onStartTrackingTouch(SeekBar seekBar) {
-
-                        }
-
-                        @Override
-                        public void onStopTrackingTouch(SeekBar seekBar) {
-
-                        }
-                    });
-                    mediaPlayer.start();
-                    playPauseIcon.setImageResource(R.drawable.ic_pause_red);
-
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-
-            }
+            playThePosition(currentPlaylistItemPosition);
         }
     }
 
@@ -416,6 +177,92 @@ public class MainActivity extends AppCompatActivity {
             playPauseIcon.setImageResource(R.drawable.ic_pause_red);
 
         }
+    }
+
+    public void playThePosition(int position){
+        if (mediaPlayer.isPlaying()) {
+            mediaPlayer.stop();
+            mediaPlayer.release();
+            mediaPlayer = new MediaPlayer();
+
+            currentTrackTextView.setText("" + playlistListView.getItemAtPosition(position));
+            try {
+                mediaPlayer.setDataSource(""+tracksHashMap.get(playlistListView.getItemAtPosition(position)));
+                mediaPlayer.prepare();
+                mediaPlayer.start();
+                playPauseIcon.setImageResource(R.drawable.ic_pause_red);
+
+                seekbar.setMax(mediaPlayer.getDuration());
+                new Timer().scheduleAtFixedRate(new TimerTask() {
+                    @Override
+                    public void run() {
+                        seekbar.setProgress(mediaPlayer.getCurrentPosition());
+                    }
+                }, 0, 1000);
+                seekbar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+                    @Override
+                    public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                        if (fromUser) {
+                            mediaPlayer.seekTo(progress);
+                        }
+                    }
+
+                    @Override
+                    public void onStartTrackingTouch(SeekBar seekBar) {
+
+                    }
+
+                    @Override
+                    public void onStopTrackingTouch(SeekBar seekBar) {
+
+                    }
+                });
+
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        } else {
+            mediaPlayer = new MediaPlayer();
+            Log.d("mypath", "path = " + tracksHashMap.get(playlistListView.getItemAtPosition(position)));
+            currentTrackTextView.setText("" + playlistListView.getItemAtPosition(position));
+            try {
+                mediaPlayer.setDataSource(""+tracksHashMap.get(playlistListView.getItemAtPosition(position)));
+                mediaPlayer.prepare();
+                seekbar.setMax(mediaPlayer.getDuration());
+                new Timer().scheduleAtFixedRate(new TimerTask() {
+                    @Override
+                    public void run() {
+                        seekbar.setProgress(mediaPlayer.getCurrentPosition());
+                    }
+                }, 0, 1000);
+
+                seekbar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+                    @Override
+                    public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                        if (fromUser) {
+                            mediaPlayer.seekTo(progress);
+                        }
+                    }
+
+                    @Override
+                    public void onStartTrackingTouch(SeekBar seekBar) {
+
+                    }
+
+                    @Override
+                    public void onStopTrackingTouch(SeekBar seekBar) {
+
+                    }
+                });
+                mediaPlayer.start();
+                playPauseIcon.setImageResource(R.drawable.ic_pause_red);
+
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+        }
+
     }
 
 }
