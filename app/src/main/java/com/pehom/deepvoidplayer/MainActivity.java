@@ -1,5 +1,7 @@
 package com.pehom.deepvoidplayer;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
@@ -12,7 +14,10 @@ import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.media.MediaPlayer;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.provider.MediaStore;
 import android.util.Log;
 import android.view.View;
@@ -41,23 +46,31 @@ public class MainActivity extends AppCompatActivity {
     private RecyclerView playlistRecyclerView;
     private TextView currentTrackTextView;
     private TrackAdapter playlistAdapter;
+    private Handler currentTrackPositionHandler;
 
 
     private int currentPlaylistItemPosition = 0;
-    private int currentTrackProgress = 0;
+    private String currentTrackProgress;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         playPauseIcon = findViewById(R.id.imageViewPlay);
-
         currentTrackTextView = findViewById(R.id.currentTrackTextView);
-
-        mediaPlayer = new MediaPlayer();
-
         seekbar = findViewById(R.id.seekBar);
         playlistArrayList = new ArrayList<Track>();
+        currentTrackPositionHandler = new Handler(){
+            @Override
+            public void handleMessage(Message msg) {
+                int min = msg.what/1000/60;
+                int sec = msg.what/1000 - min*60;
+                if (sec < 10) {currentTrackProgress = ""+ min + ":0" + sec;}
+                else {currentTrackProgress = ""+ min + ":" + sec;}
+                currentTrackTextView.setText(playlistArrayList.get(currentPlaylistItemPosition).getArtist()
+                        + " - " + playlistArrayList.get(currentPlaylistItemPosition).getTitle() + "  " + currentTrackProgress);
 
+            }
+        };
 
         if (ContextCompat.checkSelfPermission(
        MainActivity.this, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED){
@@ -165,20 +178,77 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
     public void play(View view) {
-        if (mediaPlayer.isPlaying()) {
-            mediaPlayer.pause();
-            playPauseIcon.setImageResource(R.drawable.ic_play_arrow_red);
-        } else {
-            mediaPlayer.start();
+        if (mediaPlayer == null) {
+            playThePosition(currentPlaylistItemPosition);
             playPauseIcon.setImageResource(R.drawable.ic_pause_red);
+        } else {
+            if (mediaPlayer.isPlaying()) {
+                mediaPlayer.pause();
+                playPauseIcon.setImageResource(R.drawable.ic_play_arrow_red);
+            } else {
+                mediaPlayer.start();
+                playPauseIcon.setImageResource(R.drawable.ic_pause_red);
+            }
         }
-
-
     }
 
     public void playThePosition(int position){
-        if (mediaPlayer.isPlaying()) {
+        currentPlaylistItemPosition = position;
+        if (mediaPlayer == null || !mediaPlayer.isPlaying()) {
+            mediaPlayer = new MediaPlayer();
+
+            try {
+                mediaPlayer.setDataSource(playlistArrayList.get(position).getData());
+                mediaPlayer.prepare();
+                mediaPlayer.start();
+                mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+                    @Override
+                    public void onCompletion(MediaPlayer mp) {
+                        if (currentPlaylistItemPosition < playlistArrayList.size()-1) {
+                            currentPlaylistItemPosition++;
+                            playThePosition(currentPlaylistItemPosition);
+                        } else playPauseIcon.setImageResource(R.drawable.ic_play_arrow_red);
+                    }
+                });
+                seekbar.setMax(mediaPlayer.getDuration());
+                new Timer().scheduleAtFixedRate(new TimerTask() {
+                    @Override
+                    public void run() {
+                        seekbar.setProgress(mediaPlayer.getCurrentPosition());
+
+                     //   Log.d("trackProgress", "trackProgress = " + min + ":" + sec);
+                        currentTrackPositionHandler.sendEmptyMessage(mediaPlayer.getCurrentPosition());
+                    }
+                }, 0, 1000);
+
+                seekbar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+                    @Override
+                    public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                        if (fromUser) {
+                            mediaPlayer.seekTo(progress);
+                        }
+                    }
+
+                    @Override
+                    public void onStartTrackingTouch(SeekBar seekBar) {
+
+                    }
+
+                    @Override
+                    public void onStopTrackingTouch(SeekBar seekBar) {
+
+                    }
+                });
+                playPauseIcon.setImageResource(R.drawable.ic_pause_red);
+
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+         //   currentTrackTextView.setText(playlistArrayList.get(position).getArtist() + " - " + playlistArrayList.get(position).getTitle());
+        } else {
             mediaPlayer.stop();
             mediaPlayer.release();
             mediaPlayer = new MediaPlayer();
@@ -192,7 +262,7 @@ public class MainActivity extends AppCompatActivity {
                         if (currentPlaylistItemPosition < playlistArrayList.size()-1) {
                             currentPlaylistItemPosition++;
                             playThePosition(currentPlaylistItemPosition);
-                        }
+                        } else playPauseIcon.setImageResource(R.drawable.ic_play_arrow_red);
                     }
                 });
                 playPauseIcon.setImageResource(R.drawable.ic_pause_red);
@@ -202,9 +272,8 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void run() {
                         seekbar.setProgress(mediaPlayer.getCurrentPosition());
-                        int min = mediaPlayer.getCurrentPosition()/1000/60;
-                        int sec = mediaPlayer.getCurrentPosition()/1000 - min*60;
-                        Log.d("trackProgress", "trackProgress = " + min + ":" + sec);
+                        currentTrackPositionHandler.sendEmptyMessage(mediaPlayer.getCurrentPosition());
+
                     }
                 }, 0, 1000);
                 seekbar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
@@ -229,63 +298,7 @@ public class MainActivity extends AppCompatActivity {
             } catch (IOException e) {
                 e.printStackTrace();
             }
-            currentTrackTextView.setText(playlistArrayList.get(position).getArtist() + " - " + playlistArrayList.get(position).getTitle());
-
-
-        } else {
-            mediaPlayer = new MediaPlayer();
-
-            try {
-                mediaPlayer.setDataSource(playlistArrayList.get(position).getData());
-                mediaPlayer.prepare();
-                mediaPlayer.start();
-                mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-                    @Override
-                    public void onCompletion(MediaPlayer mp) {
-                        if (currentPlaylistItemPosition < playlistArrayList.size()-1) {
-                            currentPlaylistItemPosition++;
-                            playThePosition(currentPlaylistItemPosition);
-                        }
-                    }
-                });
-                seekbar.setMax(mediaPlayer.getDuration());
-                new Timer().scheduleAtFixedRate(new TimerTask() {
-                    @Override
-                    public void run() {
-                        seekbar.setProgress(mediaPlayer.getCurrentPosition());
-                        int min = mediaPlayer.getCurrentPosition()/1000/60;
-                        int sec = mediaPlayer.getCurrentPosition()/1000 - min*60;
-                        Log.d("trackProgress", "trackProgress = " + min + ":" + sec);
-
-                    }
-                }, 0, 1000);
-
-                seekbar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-                    @Override
-                    public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                        if (fromUser) {
-                            mediaPlayer.seekTo(progress);
-                        }
-                    }
-
-                    @Override
-                    public void onStartTrackingTouch(SeekBar seekBar) {
-
-                    }
-
-                    @Override
-                    public void onStopTrackingTouch(SeekBar seekBar) {
-
-                    }
-                });
-                playPauseIcon.setImageResource(R.drawable.ic_pause_red);
-
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-
-            currentTrackTextView.setText(playlistArrayList.get(position).getArtist() + " - " + playlistArrayList.get(position).getTitle());
-
+          //  currentTrackTextView.setText(playlistArrayList.get(position).getArtist() + " - " + playlistArrayList.get(position).getTitle());
         }
 
     }
