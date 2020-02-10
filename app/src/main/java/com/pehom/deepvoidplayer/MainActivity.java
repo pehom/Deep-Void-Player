@@ -238,6 +238,16 @@ public class MainActivity extends AppCompatActivity {
             try {
                 mediaPlayer.setDataSource(playlistArrayList.get(position).getData());
                 mediaPlayer.prepare();
+                mediaPlayer.start();
+                mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+                    @Override
+                    public void onCompletion(MediaPlayer mp) {
+                        if (currentPlaylistItemPosition < playlistArrayList.size()-1) {
+                            currentPlaylistItemPosition++;
+                            playThePosition(currentPlaylistItemPosition);
+                        }
+                    }
+                });
                 seekbar.setMax(mediaPlayer.getDuration());
                 new Timer().scheduleAtFixedRate(new TimerTask() {
                     @Override
@@ -268,7 +278,6 @@ public class MainActivity extends AppCompatActivity {
 
                     }
                 });
-                mediaPlayer.start();
                 playPauseIcon.setImageResource(R.drawable.ic_pause_red);
 
             } catch (IOException e) {
