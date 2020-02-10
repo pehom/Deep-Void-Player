@@ -3,6 +3,8 @@ package com.pehom.deepvoidplayer;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.Manifest;
 import android.content.ContentResolver;
@@ -34,14 +36,13 @@ public class MainActivity extends AppCompatActivity {
     private MediaPlayer mediaPlayer;
     private ImageView playPauseIcon;
     private SeekBar seekbar;
-    private List<String> playlistArrayList;
-    private List<String> durationList;
-    private ListView playlistListView;
-    private ListView durationListView;
+    private ArrayList<Track> playlistArrayList;
+    private RecyclerView.LayoutManager trackLayoutManager;
+    private RecyclerView playlistRecyclerView;
     private TextView currentTrackTextView;
-    private ArrayAdapter<String> playlistAdapter;
-    private ArrayAdapter<String> durationAdapter;
-    private HashMap tracksHashMap;
+    private TrackAdapter playlistAdapter;
+
+
     private int currentPlaylistItemPosition = 0;
     private int currentTrackProgress = 0;
     @Override
@@ -49,15 +50,14 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         playPauseIcon = findViewById(R.id.imageViewPlay);
-        playlistListView = findViewById(R.id.playlistListView);
-        durationListView = findViewById(R.id.durationtListView);
+
         currentTrackTextView = findViewById(R.id.currentTrackTextView);
 
         mediaPlayer = new MediaPlayer();
 
         seekbar = findViewById(R.id.seekBar);
-        playlistArrayList = new ArrayList<String>();
-        durationList = new ArrayList<String>();
+        playlistArrayList = new ArrayList<Track>();
+
 
         if (ContextCompat.checkSelfPermission(
        MainActivity.this, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED){
@@ -79,23 +79,29 @@ public class MainActivity extends AppCompatActivity {
 
     public void doStuff(){
         getMusic();
-        durationAdapter = new ArrayAdapter<>(this, R.layout.duration_list_item, durationList);
-        durationListView.setAdapter(durationAdapter);
-        durationListView.setClickable(false);
-        playlistAdapter = new ArrayAdapter<>(this, R.layout.playlist_item, playlistArrayList);
-        playlistListView.setAdapter(playlistAdapter);
-        playlistListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        playlistRecyclerView = findViewById(R.id.playlistRecyclerView);
+       // playlistRecyclerView.setHasFixedSize(true);
+
+        trackLayoutManager = new LinearLayoutManager(this);
+        playlistAdapter = new TrackAdapter(playlistArrayList);
+        playlistAdapter.setOnTrackClickListener(new TrackAdapter.OnTrackClickListener() {
             @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                //play
+            public void onTrackClick(int position) {
                 currentPlaylistItemPosition = position;
-                playThePosition(currentPlaylistItemPosition);
+                playThePosition(position);
             }
         });
+
+        playlistRecyclerView.setLayoutManager(trackLayoutManager);
+        playlistRecyclerView.setAdapter(playlistAdapter);
+
+
+
+
     }
 
     public void getMusic(){
-        tracksHashMap = new HashMap();
+
         ContentResolver contentResolver = getContentResolver();
         Uri trackUri = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
         String selection = MediaStore.Audio.Media.IS_MUSIC + " != 0";
@@ -106,18 +112,21 @@ public class MainActivity extends AppCompatActivity {
             int trackDuration = cursor.getColumnIndex(MediaStore.Audio.Media.DURATION);
 
             do {
+                Track currentTrack = new Track();
                 String currentTitle = cursor.getString(trackTitle);
                 String currentArtist = cursor.getString(trackArtist);
                 String currentDuration = cursor.getString(trackDuration);
                 int duration = Integer.parseInt(currentDuration);
                 int min = duration/1000/60;
                 int sec = duration/1000 - min*60;
-                currentDuration = "" + min + ":" + sec;
-                durationList.add(currentDuration);
-                String track = currentArtist + " - " + currentTitle;
-                playlistArrayList.add(track);
-                tracksHashMap.put(track, cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.DATA)));
-                Log.d("hashmap", "" + tracksHashMap.get(track) );
+                if (sec < 10) currentDuration = "" + min + ":0" + sec;
+                else currentDuration = "" + min + ":" + sec;
+                currentTrack.setArtist(currentArtist);
+                currentTrack.setTitle(currentTitle);
+                currentTrack.setDuration(currentDuration);
+                currentTrack.setData(cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.DATA)));
+                playlistArrayList.add(currentTrack);
+
             } while (cursor.moveToNext());
         }
     }
@@ -174,9 +183,18 @@ public class MainActivity extends AppCompatActivity {
             mediaPlayer.release();
             mediaPlayer = new MediaPlayer();
             try {
-                mediaPlayer.setDataSource(""+tracksHashMap.get(playlistListView.getItemAtPosition(position)));
+                mediaPlayer.setDataSource(playlistArrayList.get(position).getData());
                 mediaPlayer.prepare();
                 mediaPlayer.start();
+                mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+                    @Override
+                    public void onCompletion(MediaPlayer mp) {
+                        if (currentPlaylistItemPosition < playlistArrayList.size()-1) {
+                            currentPlaylistItemPosition++;
+                            playThePosition(currentPlaylistItemPosition);
+                        }
+                    }
+                });
                 playPauseIcon.setImageResource(R.drawable.ic_pause_red);
                 seekbar.setMax(mediaPlayer.getDuration());
                 new Timer().scheduleAtFixedRate(new TimerTask() {
@@ -211,15 +229,14 @@ public class MainActivity extends AppCompatActivity {
             } catch (IOException e) {
                 e.printStackTrace();
             }
-            currentTrackTextView.setText("" + playlistListView.getItemAtPosition(currentPlaylistItemPosition) );
+            currentTrackTextView.setText(playlistArrayList.get(position).getArtist() + " - " + playlistArrayList.get(position).getTitle());
 
 
         } else {
             mediaPlayer = new MediaPlayer();
-            Log.d("mypath", "path = " + tracksHashMap.get(playlistListView.getItemAtPosition(position)));
-          //  currentTrackTextView.setText("" + playlistListView.getItemAtPosition(position));
+
             try {
-                mediaPlayer.setDataSource(""+tracksHashMap.get(playlistListView.getItemAtPosition(position)));
+                mediaPlayer.setDataSource(playlistArrayList.get(position).getData());
                 mediaPlayer.prepare();
                 seekbar.setMax(mediaPlayer.getDuration());
                 new Timer().scheduleAtFixedRate(new TimerTask() {
@@ -258,7 +275,7 @@ public class MainActivity extends AppCompatActivity {
                 e.printStackTrace();
             }
 
-         currentTrackTextView.setText("" + playlistListView.getItemAtPosition(position));
+            currentTrackTextView.setText(playlistArrayList.get(position).getArtist() + " - " + playlistArrayList.get(position).getTitle());
 
         }
 
