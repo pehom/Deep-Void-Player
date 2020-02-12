@@ -33,6 +33,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Random;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -48,9 +49,14 @@ public class MainActivity extends AppCompatActivity {
     private TrackAdapter playlistAdapter;
     private Handler currentTrackPositionHandler;
 
-
     private int currentPlaylistItemPosition = 0;
     private String currentTrackProgress;
+
+    private ImageView shuffleImageView;
+    private boolean isShuffleModeOn = false;
+    private ArrayList<Integer> shuffledTracks;
+    private ImageView loopImageView;
+    private int loopMode = 0;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -206,11 +212,23 @@ public class MainActivity extends AppCompatActivity {
                 mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
                     @Override
                     public void onCompletion(MediaPlayer mp) {
-                        if (currentPlaylistItemPosition < playlistArrayList.size()-1) {
-                            currentPlaylistItemPosition++;
-                            playThePosition(currentPlaylistItemPosition);
-                        } else playPauseIcon.setImageResource(R.drawable.ic_play_arrow_red);
+                        if (isShuffleModeOn) {
+                            if (shuffledTracks.size()>1) {
+                                Random random = new Random();
+                                currentPlaylistItemPosition = random.nextInt(shuffledTracks.size());
+                                shuffledTracks.remove(currentPlaylistItemPosition);
+                                playThePosition(currentPlaylistItemPosition);
+                            }
+
+
+                        } else {
+                            if (currentPlaylistItemPosition < playlistArrayList.size()-1) {
+                                currentPlaylistItemPosition++;
+                                playThePosition(currentPlaylistItemPosition);
+                            } else playPauseIcon.setImageResource(R.drawable.ic_play_arrow_red);
+                        }
                     }
+
                 });
                 seekbar.setMax(mediaPlayer.getDuration());
                 new Timer().scheduleAtFixedRate(new TimerTask() {
@@ -259,10 +277,22 @@ public class MainActivity extends AppCompatActivity {
                 mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
                     @Override
                     public void onCompletion(MediaPlayer mp) {
-                        if (currentPlaylistItemPosition < playlistArrayList.size()-1) {
-                            currentPlaylistItemPosition++;
-                            playThePosition(currentPlaylistItemPosition);
-                        } else playPauseIcon.setImageResource(R.drawable.ic_play_arrow_red);
+                        if (isShuffleModeOn) {
+                            if (shuffledTracks.size()>1) {
+                                Random random = new Random();
+                                currentPlaylistItemPosition = random.nextInt(shuffledTracks.size());
+                                shuffledTracks.remove(currentPlaylistItemPosition);
+                                playThePosition(currentPlaylistItemPosition);
+                            }
+
+
+
+                        } else {
+                            if (currentPlaylistItemPosition < playlistArrayList.size()-1) {
+                                currentPlaylistItemPosition++;
+                                playThePosition(currentPlaylistItemPosition);
+                            } else playPauseIcon.setImageResource(R.drawable.ic_play_arrow_red);
+                        }
                     }
                 });
                 playPauseIcon.setImageResource(R.drawable.ic_pause_red);
@@ -303,4 +333,20 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    public void changeShuffleMode(View view) {
+        shuffleImageView = findViewById(R.id.shuffleImageView);
+        if (isShuffleModeOn == false) {
+            shuffleImageView.setImageResource(R.drawable.ic_shuffle_accent_24dp);
+            isShuffleModeOn = true;
+            shuffledTracks = new ArrayList<>();
+            for (int i=0;i<playlistArrayList.size();i++) shuffledTracks.add(i);
+
+        } else {
+            shuffleImageView.setImageResource(R.drawable.ic_shuffle_accent_faded_24dp);
+            isShuffleModeOn = false;
+        }
+    }
+
+    public void changeLoopMode(View view) {
+    }
 }
