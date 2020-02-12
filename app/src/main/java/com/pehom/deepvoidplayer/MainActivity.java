@@ -170,18 +170,41 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void nextTrack(View view) {
-        if (currentPlaylistItemPosition < playlistArrayList.size()-1) {
-            currentPlaylistItemPosition++;
-            playThePosition(currentPlaylistItemPosition);
-        }
+        if (isShuffleModeOn) {
+            if (shuffledTracks.size()>1) {
+                Random random = new Random();
+                currentPlaylistItemPosition = random.nextInt(shuffledTracks.size());
+                shuffledTracks.remove(currentPlaylistItemPosition);
+                playThePosition(currentPlaylistItemPosition);
+            }
 
+
+        } else {
+            if (currentPlaylistItemPosition < playlistArrayList.size()-1) {
+                currentPlaylistItemPosition++;
+                playThePosition(currentPlaylistItemPosition);
+            } else playPauseIcon.setImageResource(R.drawable.ic_play_arrow_red);
+        }
     }
 
     public void prevTrack(View view) {
-        if (currentPlaylistItemPosition > 0) {
-            currentPlaylistItemPosition--;
-            playThePosition(currentPlaylistItemPosition);
+        if (isShuffleModeOn) {
+            if (shuffledTracks.size()>1) {
+                Random random = new Random();
+                currentPlaylistItemPosition = random.nextInt(shuffledTracks.size());
+                shuffledTracks.remove(currentPlaylistItemPosition);
+                playThePosition(currentPlaylistItemPosition);
+            }
+
+
+        } else {
+            if (currentPlaylistItemPosition > 0) {
+                currentPlaylistItemPosition--;
+                playThePosition(currentPlaylistItemPosition);
+
+            }
         }
+
     }
 
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)

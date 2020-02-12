@@ -73,7 +73,7 @@
         android:layout_marginEnd="30dp"
         android:layout_marginRight="30dp"
         android:alpha="0.9"
-
+        android:textAlignment="center"
         android:autoSizeTextType="uniform"
         android:textColor="@color/colorAccent"
         android:textSize="20sp"
@@ -93,10 +93,11 @@
         android:layout_marginRight="300dp"
         android:layout_marginBottom="20dp"
         android:alpha="90"
+        android:autoSizeTextType="uniform"
         android:text="Playlist:"
         android:textStyle="bold"
         android:textColor="@color/colorAccent"
-        android:textSize="16sp"
+
         app:layout_constraintBottom_toTopOf="@+id/playlistRecyclerView"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
@@ -112,7 +113,7 @@
         android:text="All tracks"
         android:textAlignment="center"
         android:textColor="@color/colorAccent"
-        android:textSize="16sp"
+        android:autoSizeTextType="uniform"
         android:textStyle="bold"
         app:layout_constraintBottom_toTopOf="@+id/playlistRecyclerView"
         app:layout_constraintEnd_toEndOf="parent"
