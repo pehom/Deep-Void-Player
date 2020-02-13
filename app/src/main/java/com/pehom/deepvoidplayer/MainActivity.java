@@ -56,14 +56,21 @@ public class MainActivity extends AppCompatActivity {
     private boolean isShuffleModeOn = false;
     private ArrayList<Integer> shuffledTracks;
     private ImageView loopImageView;
+    private TextView loopModeTextView;
     private int loopMode = 0;
+    Random random;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        random = new Random();
+        setContentView(R.layout.alternative_activity_main);
         playPauseIcon = findViewById(R.id.imageViewPlay);
         currentTrackTextView = findViewById(R.id.currentTrackTextView);
         seekbar = findViewById(R.id.seekBar);
+        loopImageView = findViewById(R.id.loopImageView);
+        loopModeTextView = findViewById(R.id.loopModeTextView);
+        loopModeTextView.setVisibility(View.INVISIBLE);
         playlistArrayList = new ArrayList<Track>();
         currentTrackPositionHandler = new Handler(){
             @Override
@@ -235,20 +242,49 @@ public class MainActivity extends AppCompatActivity {
                 mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
                     @Override
                     public void onCompletion(MediaPlayer mp) {
-                        if (isShuffleModeOn) {
-                            if (shuffledTracks.size()>1) {
-                                Random random = new Random();
-                                currentPlaylistItemPosition = random.nextInt(shuffledTracks.size());
-                                shuffledTracks.remove(currentPlaylistItemPosition);
-                                playThePosition(currentPlaylistItemPosition);
-                            }
+                        switch (loopMode) {
+                            case 0:
+                                    if (isShuffleModeOn) {
+                                        if (shuffledTracks.size()>1) {
+                                            currentPlaylistItemPosition = random.nextInt(shuffledTracks.size());
+                                            shuffledTracks.remove(currentPlaylistItemPosition);
+                                            playThePosition(currentPlaylistItemPosition);
+                                        }
+
+                                    } else {
+                                        if (currentPlaylistItemPosition < playlistArrayList.size()-1) {
+                                            currentPlaylistItemPosition++;
+                                            playThePosition(currentPlaylistItemPosition);
+                                        } else playPauseIcon.setImageResource(R.drawable.ic_play_arrow_red);
+                                    }
+                                    break;
+                            case 1:
+                                    playThePosition(currentPlaylistItemPosition);
+                                    break;
+                            case 2:
+                                    if (isShuffleModeOn) {
+                                        if (shuffledTracks.size()>1) {
+                                            currentPlaylistItemPosition = random.nextInt(shuffledTracks.size());
+                                            shuffledTracks.remove(currentPlaylistItemPosition);
+                                            playThePosition(currentPlaylistItemPosition);
+                                        } else {
+                                            for (int i=0;i<playlistArrayList.size();i++) shuffledTracks.add(i);
+                                            currentPlaylistItemPosition = random.nextInt(shuffledTracks.size());
+                                            shuffledTracks.remove(currentPlaylistItemPosition);
+                                            playThePosition(currentPlaylistItemPosition);
+                                        }
 
 
-                        } else {
-                            if (currentPlaylistItemPosition < playlistArrayList.size()-1) {
-                                currentPlaylistItemPosition++;
-                                playThePosition(currentPlaylistItemPosition);
-                            } else playPauseIcon.setImageResource(R.drawable.ic_play_arrow_red);
+                                    } else {
+                                        if (currentPlaylistItemPosition < playlistArrayList.size()-1) {
+                                            currentPlaylistItemPosition++;
+                                            playThePosition(currentPlaylistItemPosition);
+                                        } else {
+                                            currentPlaylistItemPosition = 0;
+                                            playThePosition(currentPlaylistItemPosition);
+                                        }
+                                    }
+                                    break;
                         }
                     }
 
@@ -300,21 +336,49 @@ public class MainActivity extends AppCompatActivity {
                 mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
                     @Override
                     public void onCompletion(MediaPlayer mp) {
-                        if (isShuffleModeOn) {
-                            if (shuffledTracks.size()>1) {
-                                Random random = new Random();
-                                currentPlaylistItemPosition = random.nextInt(shuffledTracks.size());
-                                shuffledTracks.remove(currentPlaylistItemPosition);
+                        switch (loopMode) {
+                            case 0:
+                                if (isShuffleModeOn) {
+                                    if (shuffledTracks.size()>1) {
+                                        currentPlaylistItemPosition = random.nextInt(shuffledTracks.size());
+                                        shuffledTracks.remove(currentPlaylistItemPosition);
+                                        playThePosition(currentPlaylistItemPosition);
+                                    }
+
+                                } else {
+                                    if (currentPlaylistItemPosition < playlistArrayList.size()-1) {
+                                        currentPlaylistItemPosition++;
+                                        playThePosition(currentPlaylistItemPosition);
+                                    } else playPauseIcon.setImageResource(R.drawable.ic_play_arrow_red);
+                                }
+                                break;
+                            case 1:
                                 playThePosition(currentPlaylistItemPosition);
-                            }
+                                break;
+                            case 2:
+                                if (isShuffleModeOn) {
+                                    if (shuffledTracks.size()>1) {
+                                        currentPlaylistItemPosition = random.nextInt(shuffledTracks.size());
+                                        shuffledTracks.remove(currentPlaylistItemPosition);
+                                        playThePosition(currentPlaylistItemPosition);
+                                    } else {
+                                        for (int i=0;i<playlistArrayList.size();i++) shuffledTracks.add(i);
+                                        currentPlaylistItemPosition = random.nextInt(shuffledTracks.size());
+                                        shuffledTracks.remove(currentPlaylistItemPosition);
+                                        playThePosition(currentPlaylistItemPosition);
+                                    }
 
 
-
-                        } else {
-                            if (currentPlaylistItemPosition < playlistArrayList.size()-1) {
-                                currentPlaylistItemPosition++;
-                                playThePosition(currentPlaylistItemPosition);
-                            } else playPauseIcon.setImageResource(R.drawable.ic_play_arrow_red);
+                                } else {
+                                    if (currentPlaylistItemPosition < playlistArrayList.size()-1) {
+                                        currentPlaylistItemPosition++;
+                                        playThePosition(currentPlaylistItemPosition);
+                                    } else {
+                                        currentPlaylistItemPosition = 0;
+                                        playThePosition(currentPlaylistItemPosition);
+                                    }
+                                }
+                                break;
                         }
                     }
                 });
@@ -358,7 +422,7 @@ public class MainActivity extends AppCompatActivity {
 
     public void changeShuffleMode(View view) {
         shuffleImageView = findViewById(R.id.shuffleImageView);
-        if (isShuffleModeOn == false) {
+        if (!isShuffleModeOn) {
             shuffleImageView.setImageResource(R.drawable.ic_shuffle_accent_24dp);
             isShuffleModeOn = true;
             shuffledTracks = new ArrayList<>();
@@ -371,5 +435,31 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void changeLoopMode(View view) {
+        switch (loopMode) {
+            case 0:
+                loopImageView.setImageResource(R.drawable.ic_loop_accent_24dp);
+                loopModeTextView.setVisibility(View.VISIBLE);
+                loopModeTextView.setText("track");
+                loopMode = 1;
+                break;
+            case 1:
+                loopImageView.setImageResource(R.drawable.ic_loop_accent_24dp);
+                loopModeTextView.setVisibility(View.VISIBLE);
+                loopModeTextView.setText("playlist");
+                loopMode = 2;
+                break;
+            case 2:
+                loopImageView.setImageResource(R.drawable.ic_loop_accent_faded_24dp);
+                loopModeTextView.setVisibility(View.INVISIBLE);
+                loopModeTextView.setText("");
+                loopMode = 0;
+                break;
+
+
+        }
+    }
+
+    public void choosePlaylist(View view) {
+
     }
 }

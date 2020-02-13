@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/background"
-    tools:context=".MainActivity" >
+     >
 
     <SeekBar
         android:id="@+id/seekBar"
@@ -120,9 +120,10 @@
         app:layout_constraintStart_toEndOf="@+id/TextView1" />
 
     <ImageView
-        android:id="@+id/imageView"
+        android:id="@+id/choosePlaylistImageView"
         android:layout_width="60dp"
         android:layout_height="30dp"
+        android:onClick="choosePlaylist"
         android:layout_marginEnd="13dp"
         android:layout_marginRight="13dp"
         android:layout_marginBottom="13dp"
@@ -148,10 +149,10 @@
     <ImageView
         android:id="@+id/shuffleImageView"
         android:layout_width="0dp"
-        android:layout_height="35dp"
+        android:layout_height="30dp"
         android:layout_marginTop="17dp"
-        android:onClick="changeShuffleMode"
         android:alpha="60"
+        android:onClick="changeShuffleMode"
         app:layout_constraintEnd_toStartOf="@+id/imageViewPlay"
         app:layout_constraintStart_toEndOf="@+id/imageViewPrev"
         app:layout_constraintTop_toBottomOf="@+id/seekBar"
@@ -161,7 +162,7 @@
     <ImageView
         android:id="@+id/loopImageView"
         android:layout_width="0dp"
-        android:layout_height="35dp"
+        android:layout_height="30dp"
         android:layout_marginTop="17dp"
         android:onClick="changeLoopMode"
         app:layout_constraintEnd_toStartOf="@+id/imageViewNext"
@@ -169,5 +170,17 @@
         app:layout_constraintTop_toBottomOf="@+id/seekBar"
         app:srcCompat="@drawable/ic_loop_accent_faded_24dp"
         tools:ignore="VectorDrawableCompat" />
+
+    <TextView
+        android:id="@+id/loopModeTextView"
+        android:layout_width="0dp"
+        android:layout_height="15dp"
+        android:text="TextView"
+        android:textSize="12sp"
+        android:textAlignment="center"
+        android:textColor="@color/colorAccent"
+        app:layout_constraintEnd_toStartOf="@+id/imageViewNext"
+        app:layout_constraintStart_toEndOf="@+id/imageViewPlay"
+        app:layout_constraintTop_toBottomOf="@+id/loopImageView" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
