@@ -10,6 +10,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.Manifest;
 import android.content.ContentResolver;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.media.MediaPlayer;
@@ -24,6 +25,7 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.SeekBar;
 import android.widget.TextView;
@@ -59,6 +61,8 @@ public class MainActivity extends AppCompatActivity {
     private TextView loopModeTextView;
     private int loopMode = 0;
     Random random;
+    private  LinearLayout choosePlaylistLinearLayout;
+    boolean choosePlaylistLinearLayoutIsVisible =  false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -120,9 +124,6 @@ public class MainActivity extends AppCompatActivity {
 
         playlistRecyclerView.setLayoutManager(trackLayoutManager);
         playlistRecyclerView.setAdapter(playlistAdapter);
-
-
-
 
     }
 
@@ -460,6 +461,20 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void choosePlaylist(View view) {
+        choosePlaylistLinearLayout = findViewById(R.id.choosePlaylistLinearLayout);
+        if (!choosePlaylistLinearLayoutIsVisible) {
+            playlistRecyclerView.setVisibility(View.VISIBLE);
+            choosePlaylistLinearLayoutIsVisible = true;
+        }
+        else {
+            playlistRecyclerView.setVisibility(View.INVISIBLE);
+            choosePlaylistLinearLayoutIsVisible = false;
+        }
 
+    }
+
+    public void createPlaylist(View view) {
+        Intent intent = new Intent(MainActivity.this, CreatePlaylistActivity.class);
+        startActivity(intent);
     }
 }

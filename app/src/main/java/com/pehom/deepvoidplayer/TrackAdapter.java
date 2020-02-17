@@ -43,6 +43,7 @@ public class TrackAdapter  extends RecyclerView.Adapter<TrackAdapter.TrackViewHo
     public void onBindViewHolder(@NonNull TrackViewHolder holder, int position) {
         Track currentTrack = tracks.get(position);
         holder.trackTitleTextView.setText(currentTrack.getArtist() + " - " + currentTrack.getTitle());
+
         holder.durationTextView.setText(currentTrack.getDuration());
 
     }

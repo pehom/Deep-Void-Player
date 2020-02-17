@@ -3,6 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="horizontal"
+    android:layout_marginTop="5dp"
     >
     <TextView
         android:id="@+id/trackTitleTextView"
@@ -10,15 +11,15 @@
         android:layout_height="wrap_content"
         android:layout_weight="8"
         android:textColor="@color/colorAccent"
-        android:textSize="14sp"
+        android:autoSizeTextType="uniform"
         android:text="Blablabla"/>
     <TextView
         android:id="@+id/durationTextView"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_weight="1"
+        android:layout_weight="2"
         android:textColor="@color/colorAccent"
-        android:textSize="14sp"
+        android:autoSizeTextType="uniform"
         android:text="00:00"
         android:gravity="center"/>
 

@@ -145,16 +145,58 @@
 
 
     </LinearLayout>
-
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/choosePlaylistRecyclerView"
+    <LinearLayout
+        android:id="@+id/choosePlaylistLinearLayout"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="13"
+        android:orientation="vertical"
         android:layout_marginLeft="14dp"
         android:layout_marginRight="14dp"
-        android:layout_marginTop="10dp"
-        />
+        >
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/choosePlaylistRecyclerView"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="8"
+
+            android:layout_marginTop="10dp"
+            />
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:orientation="horizontal">
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:textColor="@color/colorAccent"
+
+                android:textAlignment="textEnd"
+                android:autoSizeTextType="uniform"
+                android:layout_weight="4"
+                android:gravity="end" />
+            <ImageView
+            android:id="@+id/deletePlaylist"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+                android:src="@drawable/ic_remove_accent_24dp"/>
+            <ImageView
+                android:id="@+id/createPlaylist"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:src="@drawable/ic_add_accent_24dp"
+                android:onClick="createPlaylist"/>
+        </LinearLayout>
+
+
+
+    </LinearLayout>
+
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
