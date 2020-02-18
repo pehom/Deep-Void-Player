@@ -42,27 +42,58 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="10"
-        android:orientation="horizontal">
+        android:orientation="horizontal"
+        android:divider="@drawable/vertical_divider"
+
+        android:showDividers="middle"
+        >
         <LinearLayout
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:orientation="vertical">
-            <TextView
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
                 android:layout_weight="1"
-                android:textColor="@color/colorAccent"
-                android:text="drag your tracks here"
-                android:textSize="16sp"
-                android:textAlignment="center"
-                android:padding="5dp"/>
+                android:orientation="horizontal">
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="3"
+                    android:textColor="@color/colorAccent"
+                    android:text="CLEAR"
+                    android:textSize="12sp"
+                    android:textAlignment="center"
+                    android:padding="4dp"
+                    android:layout_marginTop="4dp"
+                    android:onClick="clearPlaylist"
+                    />
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="6"
+                    android:textColor="@color/colorAccent"
+                    android:text=" tracks "
+                    android:textSize="16sp"
+                    android:textAlignment="center"
+                    android:padding="5dp"/>
+                <ImageView
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="2"
+                    android:src="@drawable/ic_shuffle_accent_24dp"
+                    android:padding="6dp"
+                    android:onClick="shuffleNewPlaylist"/>
+            </LinearLayout>
+
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/chosenTracks"
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
                 android:layout_weight="16"
-                android:layout_marginTop="10dp"/>
+                android:layout_marginTop="10dp"
+                android:layout_marginRight="8dp"/>
         </LinearLayout>
 
         <LinearLayout
@@ -107,7 +138,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
                 android:layout_weight="16"
-                android:layout_marginTop="10dp"/>
+                android:layout_marginTop="10dp"
+                android:layout_marginLeft="8dp"/>
         </LinearLayout>
 
     </LinearLayout>
