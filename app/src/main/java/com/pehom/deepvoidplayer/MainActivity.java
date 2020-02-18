@@ -455,19 +455,19 @@ public class MainActivity extends AppCompatActivity {
     public void changeLoopMode(View view) {
         switch (loopMode) {
             case 0:
-                loopImageView.setImageResource(R.drawable.ic_loop_accent_24dp);
-                loopModeTextView.setVisibility(View.VISIBLE);
-                loopModeTextView.setText("track");
+                loopImageView.setImageResource(R.drawable.ic_repeat_one_red_24dp);
+              //  loopModeTextView.setVisibility(View.VISIBLE);
+              // loopModeTextView.setText("track");
                 loopMode = 1;
                 break;
             case 1:
-                loopImageView.setImageResource(R.drawable.ic_loop_accent_24dp);
-                loopModeTextView.setVisibility(View.VISIBLE);
-                loopModeTextView.setText("playlist");
+                loopImageView.setImageResource(R.drawable.ic_repeat_red_24dp);
+             //   loopModeTextView.setVisibility(View.VISIBLE);
+             //   loopModeTextView.setText("playlist");
                 loopMode = 2;
                 break;
             case 2:
-                loopImageView.setImageResource(R.drawable.ic_loop_accent_faded_24dp);
+                loopImageView.setImageResource(R.drawable.ic_repeat_red_faded_24dp);
                 loopModeTextView.setVisibility(View.INVISIBLE);
                 loopModeTextView.setText("");
                 loopMode = 0;

@@ -40,7 +40,7 @@
         android:orientation="horizontal"
         android:layout_marginLeft="14dp"
         android:layout_marginRight="14dp"
-        android:layout_marginTop="10dp">
+        android:layout_marginTop="7dp">
         <LinearLayout
             android:layout_width="0dp"
             android:layout_weight="2"
@@ -111,7 +111,7 @@
                 android:layout_weight="4"
                 android:padding="5dp"
                 android:onClick="changeLoopMode"
-                android:src="@drawable/ic_loop_accent_faded_24dp"
+                android:src="@drawable/ic_repeat_red_faded_24dp"
                 />
             <TextView
                 android:id="@+id/loopModeTextView"
