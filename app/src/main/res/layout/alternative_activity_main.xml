@@ -20,7 +20,10 @@
         android:textAlignment="center"
         android:autoSizeTextType="uniform"
         android:textColor="@color/colorAccent"
-
+        android:singleLine="true"
+        android:ellipsize="marquee"
+        android:marqueeRepeatLimit="marquee_forever"
+        android:scrollHorizontally="true"
         android:textStyle="bold"
        />
     <SeekBar

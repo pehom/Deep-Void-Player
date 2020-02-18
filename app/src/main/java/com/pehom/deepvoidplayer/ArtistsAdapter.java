@@ -13,27 +13,27 @@ import java.util.ArrayList;
 
 public class ArtistsAdapter extends RecyclerView.Adapter<ArtistsAdapter.ArtistViewHolder>{
     private ArrayList<Artist> artists;
-    private OnArtistClickListener clickListener;
-   // private OnArtistTouchListener touchListener;
+   // private OnArtistClickListener clickListener;
+    private OnArtistTouchListener touchListener;
 
-    public ArtistsAdapter(ArrayList<Artist> artists, OnArtistClickListener clickListener) {
+   /* public ArtistsAdapter(ArrayList<Artist> artists, OnArtistClickListener clickListener) {
         this.artists = artists;
         this.clickListener = clickListener;
-    }
+    } */
 
 
-    /*public ArtistsAdapter(ArrayList<Artist> artists, OnArtistClickListener clickListener, OnArtistTouchListener touchListener) {
+    public ArtistsAdapter(ArrayList<Artist> artists, OnArtistTouchListener touchListener) {
         this.artists = artists;
-        this.clickListener = clickListener;
+
         this.touchListener = touchListener;
-    }*/
+    }
 
     @NonNull
     @Override
     public ArtistsAdapter.ArtistViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.artist_item, parent, false);
-        ArtistViewHolder viewHolder = new ArtistViewHolder(view, clickListener);
+        ArtistViewHolder viewHolder = new ArtistViewHolder(view, touchListener);
         return viewHolder;
     }
 
@@ -60,34 +60,34 @@ public class ArtistsAdapter extends RecyclerView.Adapter<ArtistsAdapter.ArtistVi
     public static class ArtistViewHolder extends RecyclerView.ViewHolder {
         public TextView artistTextView;
 
-        public ArtistViewHolder(@NonNull View itemView, final OnArtistClickListener clickListener) {
+        public ArtistViewHolder(@NonNull View itemView, final OnArtistTouchListener touchListener) {
             super(itemView);
             artistTextView = itemView.findViewById(R.id.artistTextView);
 
-           itemView.setOnClickListener(new View.OnClickListener() {
+           itemView.setOnTouchListener(new View.OnTouchListener() {
                 @Override
-                public void onClick(View v) {
-                    if (clickListener != null) {
+                public boolean onTouch(View v, MotionEvent event) {
+                    if (touchListener != null) {
                         int position = getAdapterPosition();
                         if (position != RecyclerView.NO_POSITION) {
-                            clickListener.onArtistClick(position);
+                            touchListener.onArtistTouch(event, position);
                         }
                     }
-                }
+                return  true;}
             });
 
-         /*   artistTextView.setOnTouchListener(new View.OnTouchListener() {
+            artistTextView.setOnTouchListener(new View.OnTouchListener() {
                 @Override
                 public boolean onTouch(View v, MotionEvent event) {
                    if (touchListener != null) {
                        int position = getAdapterPosition();
                        if (position != RecyclerView.NO_POSITION) {
-                           touchListener.onArtistTouch(position);
+                           touchListener.onArtistTouch(event, position);
                        }
                    }
                     return true;
                 }
-            });*/
+            });
         }
     }
 
@@ -96,13 +96,13 @@ public class ArtistsAdapter extends RecyclerView.Adapter<ArtistsAdapter.ArtistVi
     }
 
     public interface OnArtistTouchListener {
-        void onArtistTouch(int position);
+        void onArtistTouch(MotionEvent event, int position);
     }
 
-    public void setOnArtistClickListener(OnArtistClickListener listener) {
+   /* public void setOnArtistClickListener(OnArtistClickListener listener) {
 
         this.clickListener = listener;
-    }
+    }*/
 
     public void setOnArtistTouchListener(OnArtistTouchListener listener) {
 

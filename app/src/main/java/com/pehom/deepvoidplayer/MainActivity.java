@@ -1,6 +1,5 @@
 package com.pehom.deepvoidplayer;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
@@ -21,20 +20,16 @@ import android.os.Handler;
 import android.os.Message;
 import android.provider.MediaStore;
 import android.util.Log;
+import android.view.MotionEvent;
 import android.view.View;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.ListView;
 import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
 import java.util.Random;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -53,7 +48,7 @@ public class MainActivity extends AppCompatActivity {
 
     private int currentPlaylistItemPosition = 0;
     private String currentTrackProgress;
-
+    private LinearLayout choosePlaylistLinearLayout;
     private ImageView shuffleImageView;
     private boolean isShuffleModeOn = false;
     private ArrayList<Integer> shuffledTracks;
@@ -61,8 +56,8 @@ public class MainActivity extends AppCompatActivity {
     private TextView loopModeTextView;
     private int loopMode = 0;
     Random random;
-    private  LinearLayout choosePlaylistLinearLayout;
     boolean choosePlaylistLinearLayoutIsVisible =  false;
+    private  float startx, stopx;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -113,15 +108,37 @@ public class MainActivity extends AppCompatActivity {
        // playlistRecyclerView.setHasFixedSize(true);
 
         trackLayoutManager = new LinearLayoutManager(this);
-        playlistAdapter = new TrackAdapter(playlistArrayList);
-        playlistAdapter.setOnTrackClickListener(new TrackAdapter.OnTrackClickListener() {
+        playlistAdapter = new TrackAdapter(playlistArrayList, new TrackAdapter.OnTrackTouchListener() {
             @Override
-            public void onTrackClick(int position) {
-                currentPlaylistItemPosition = position;
-                playThePosition(position);
+            public void onTrackTouch(View v, MotionEvent event, int position) {
+                switch (event.getAction()) {
+                    case MotionEvent.ACTION_DOWN: // нажатие
+                        startx = event.getX();
+                        break;
+                    case MotionEvent.ACTION_MOVE: // движение
+
+                        break;
+                    case MotionEvent.ACTION_UP: // отпускание
+                        stopx = event.getX();
+                        break;
+                    case MotionEvent.ACTION_CANCEL:
+                        stopx = startx;
+                        break;
+                }
+                if (stopx - startx >  80 && stopx!=0) {
+                    Log.d("mylog", "startx = " + startx + "  stopx = " + stopx);
+                    playlistArrayList.remove(position);
+                    playlistRecyclerView.setAdapter(playlistAdapter);
+
+                    startx=0;
+                    stopx=0;
+                }
+                if (stopx == 0) {
+                    currentPlaylistItemPosition = position;
+                    playThePosition(position);
+                }
             }
         });
-
         playlistRecyclerView.setLayoutManager(trackLayoutManager);
         playlistRecyclerView.setAdapter(playlistAdapter);
 

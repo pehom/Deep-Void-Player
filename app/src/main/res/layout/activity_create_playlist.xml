@@ -97,6 +97,7 @@
                     android:src="@drawable/ic_keyboard_return_accent_24dp"
                     android:onClick="backToArtists"
                     android:visibility="invisible"
+
                     />
 
             </LinearLayout>
