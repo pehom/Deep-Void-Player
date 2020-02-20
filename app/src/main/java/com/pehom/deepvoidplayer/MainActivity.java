@@ -2,6 +2,7 @@ package com.pehom.deepvoidplayer;
 
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.LinearLayoutCompat;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -22,6 +23,7 @@ import android.provider.MediaStore;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.SeekBar;
@@ -58,6 +60,7 @@ public class MainActivity extends AppCompatActivity {
     Random random;
     boolean choosePlaylistLinearLayoutIsVisible =  false;
     private  float startx, stopx;
+    private float dX, dY;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -113,30 +116,41 @@ public class MainActivity extends AppCompatActivity {
             public void onTrackTouch(View v, MotionEvent event, int position) {
                 switch (event.getAction()) {
                     case MotionEvent.ACTION_DOWN: // нажатие
-                        startx = event.getX();
+                        startx = event.getRawX();
+                        dX = v.getX() - event.getRawX();
+
                         break;
                     case MotionEvent.ACTION_MOVE: // движение
-
+                        if (event.getRawX() > startx) {
+                            v.animate()
+                                    .x(event.getRawX() + dX)
+                                    .setDuration(0)
+                                    .start();
+                        }
                         break;
                     case MotionEvent.ACTION_UP: // отпускание
-                        stopx = event.getX();
+                        stopx = event.getRawX();
+                        if (stopx - startx >  80 && stopx!=0) {
+                            Log.d("mylog", "startx = " + startx + "  stopx = " + stopx);
+                            playlistArrayList.remove(position);
+                            playlistRecyclerView.setAdapter(playlistAdapter);
+
+                        } else if (stopx != startx) {
+                            v.animate()
+                                    .x(startx)
+                                    .setDuration(0)
+                                    .start();
+                        }
+                        else  {
+                            currentPlaylistItemPosition = position;
+                            playThePosition(position);
+                        }
                         break;
                     case MotionEvent.ACTION_CANCEL:
-                        stopx = startx;
+
                         break;
                 }
-                if (stopx - startx >  80 && stopx!=0) {
-                    Log.d("mylog", "startx = " + startx + "  stopx = " + stopx);
-                    playlistArrayList.remove(position);
-                    playlistRecyclerView.setAdapter(playlistAdapter);
 
-                    startx=0;
-                    stopx=0;
-                }
-                if (stopx == 0) {
-                    currentPlaylistItemPosition = position;
-                    playThePosition(position);
-                }
             }
         });
         playlistRecyclerView.setLayoutManager(trackLayoutManager);
